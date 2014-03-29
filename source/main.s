@@ -4,36 +4,48 @@
 .globl _start
 
 _start:
+    b main
 
-ldr r0,=0x20200000 //loads physical address of GPIO in to r0
+    .section .text
 
-mov r1,#1 //puts 1 in to r1
-lsl r1,#18 //shifts r1 left by 18
-str r1,[r0,#4] //store r0 offset 4 in to r1
+    main:
+    mov sp,#0x8000
 
 
-mov r1, #1
-lsl r1, #16
 
-//blink forever
-loop$:
+    //blink forever
+    loop$:
 
-    str r1,[r0,#40] //turn pin 16 off, turning the led on
+        //turn led on
+        pinNum .req r0
+        pinFunc .req r1
+        mov pinNum,#16
+        mov pinFunc,#0
+        bl SetGpioFunction
+        .unreq pinNum
+        .unreq pinFunc
 
-    //wait a bit
-    mov r2,#0x3F0000
-    wait1$:
-        sub r2, #1
-        cmp r2, #0
-        bne wait1$
+        //wait a bit
+        mov r2,#0x3F0000
+        wait1$:
+            sub r2, #1
+            cmp r2, #0
+            bne wait1$
 
-    str r1,[r0,#28] //turn pin 16 on, turning the led off.
+        //turn led off
+        pinNum .req r0
+        pinFunc .req r1
+        mov pinNum,#16
+        mov pinFunc,#1
+        bl SetGpioFunction
+        .unreq pinNum
+        .unreq pinFunc
 
-    //wait a bit
-    mov r2,#0x3F0000
-    wait1$:
-        sub r2, #1
-        cmp r2, #0
-        bne wait1$
+        //wait a bit
+        mov r2,#0x3F0000
+        wait2$:
+            sub r2, #1
+            cmp r2, #0
+            bne wait2$
 
-b loop$
+    b loop$
