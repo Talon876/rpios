@@ -30,12 +30,9 @@ loop$:
     .unreq pinNum
     .unreq pinVal
 
-    //wait
-    mov r2,#0x1F8000
-    wait1$:
-        sub r2,#1
-        cmp r2,#0
-        bne wait1$
+    //wait 0.13s
+    ldr r0, =130000
+    bl Sleep
 
     //turn off OK led 
     pinNum .req r0
@@ -46,12 +43,9 @@ loop$:
     .unreq pinNum
     .unreq pinVal
 
-    //wait again
-    mov r2,#0x1F8000
-    wait2$:
-        sub r2,#1
-        cmp r2,#0
-        bne wait2$
+    //wait 0.15s
+    ldr r0, =150000
+    bl Sleep
 
     str r1,[r0,#40] //store in 40 offset from controller (turn off)
 

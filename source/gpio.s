@@ -34,11 +34,11 @@
 // Bytes 21-24: 00 000 000 000 000 000 000 000 000 000 000 - pins 50-53
 // Pins                                    53  52  51  50  
 
-.globl GetGpioAddress
 /**
  * A function which returns (sets r0) to the address of the GPIO controller.
  * It takes no arguments.
  */
+.globl GetGpioAddress
 GetGpioAddress:
     ldr r0,=0x20200000
 
@@ -46,8 +46,6 @@ GetGpioAddress:
     //by setting the program acounter to the link register
     mov pc,lr
 
-
-.globl SetGpioFunction
 /**
  * argument r0 is the pin number, must be in the range [0,54]
  * argument r1 is the pin function, must be in the range [0,7]
@@ -59,6 +57,7 @@ GetGpioAddress:
  *   While this function sets the value for the pin correctly, it sets all the
  *   other values in the set of 10 to 0. Can be fixed with and, orr, not.
  */
+.globl SetGpioFunction
 SetGpioFunction:
     cmp r0, #53 //make sure r0 is <= 53
     cmpls r1, #7 //make sure r1 is <= 7 (only runs if r0 was <= 53)
@@ -93,12 +92,11 @@ SetGpioFunction:
     //we pushed lr on to the stack earlier, pop it in to the pc to return
     pop {pc} 
 
-
-.globl SetGpio
 /**
  * r0: gpio pin
  * r1: pin value, 0 for off, not 0 for on
  */
+.globl SetGpio
 SetGpio:
     pinNum .req r0 //alias r0 to pinNum
     pinVal .req r1 //alias r1 to pinVal
