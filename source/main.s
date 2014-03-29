@@ -5,24 +5,55 @@
 
 _start:
 
-//put address of GPIO controller in to r0
-ldr r0,=0x20200000
+b main
 
-//OK LED is the 16th gpio pin
+.section .text
+main:
+    mov sp,#0x8000 //setup stack http://i.imgur.com/Ipqusb3.png
 
-//enable output to 16th pin
-//This is the 6th set of 3 pins in the second set of bytes
-mov r1,#1  //place 1 in r1
-lsl r1,#18 //get at 6th set of 3 bins (1 << (6*3=18))
-str r1,[r0,#4]  //set in second set of bytes (offset 4)
-
-//to turn the led on, set pin 16 to off (yes, off)
-//turn pin off
-mov r1, #1 
-lsl r1, #16 //shift 1 << 16 for pin 16
-str r1,[r0,#40] //store in 40 offset from controller
+//prepare pin 16
+pinNum .req r0
+pinFunc .req r1
+mov pinNum, #16 //pin 16 for OK led
+mov pinFunc, #1 //function 001
+bl SetGpioFunction
+.unreq pinNum
+.unreq pinFunc
 
 loop$:
-b loop$
+    //turn on OK led by setting pin to off (yes, off)
+    pinNum .req r0
+    pinVal .req r1
+    mov pinNum, #16
+    mov pinVal, #0 //0 = off, not 0 = on
+    bl SetGpio
+    .unreq pinNum
+    .unreq pinVal
 
+    //wait
+    mov r2,#0x1F8000
+    wait1$:
+        sub r2,#1
+        cmp r2,#0
+        bne wait1$
+
+    //turn off OK led 
+    pinNum .req r0
+    pinVal .req r1
+    mov pinNum, #16
+    mov pinVal, #1
+    bl SetGpio
+    .unreq pinNum
+    .unreq pinVal
+
+    //wait again
+    mov r2,#0x1F8000
+    wait2$:
+        sub r2,#1
+        cmp r2,#0
+        bne wait2$
+
+    str r1,[r0,#40] //store in 40 offset from controller (turn off)
+
+    b loop$
 
