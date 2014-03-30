@@ -42,18 +42,11 @@ main:
 
     //otherwise continue
     noError$:
-    fbInfoAddr .req r4
-    mov fbInfoAddr, r0
-    bl SetGraphicsAddress
-    .unreq fbInfoAddr
+    
+    //r0 still has fbInfoAddr so start boot logo
+    bl DisplayBootLogo
 
-    mov r0,#0b0000011111100000 //green
-    bl SetForeColor
-    ldr r0,=0
-    ldr r1,=0
-    bl DrawPixel
-
-    //turn OK led on if we drew a pixel. 7 more seconds until drawing starts
+    //turn OK led on if we get past the boot logo
     mov r0,#16
     mov r1,#1
     bl SetGpioFunction
@@ -62,8 +55,8 @@ main:
     bl SetGpio
     //end led turn on
 
-    //sleep after drawing first pixel so monitor has time to wake up
-    ldr r0, =7000000
+    //sleep 3s before drawing starts
+    ldr r0, =3000000
     bl Sleep
 
     random .req r4
