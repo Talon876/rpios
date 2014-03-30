@@ -17,19 +17,27 @@ main:
     bl InitFrameBuffer
 
     teq r0,#0
-
         bne noError$
-
-        //turn OK led on if we got an error
-        mov r0,#16
-        mov r1,#1
-        bl SetGpioFunction
-        mov r0,#16
-        mov r1,#0
-        bl SetGpio
-
-        //wait forever
+        //wait forever and blink OK led rapidly
         error$:
+            //turn on led
+            mov r0,#16
+            mov r1,#1
+            bl SetGpioFunction
+            mov r0,#16
+            mov r1,#0
+            bl SetGpio
+            ldr r0,=100000
+            bl Sleep
+            //turn off led
+            mov r0,#16
+            mov r1,#1
+            bl SetGpioFunction
+            mov r0,#16
+            mov r1,#1
+            bl SetGpio
+            ldr r0,=100000
+            bl Sleep
         b error$
 
     //otherwise continue
@@ -37,6 +45,7 @@ main:
     fbInfoAddr .req r4
     mov fbInfoAddr, r0
     bl SetGraphicsAddress
+    .unreq fbInfoAddr
 
     mov r0,#0b0000011111100000 //green
     bl SetForeColor
@@ -44,97 +53,65 @@ main:
     ldr r1,=0
     bl DrawPixel
 
-    //sleep 10s after drawing first pixel so monitor has time to wake up
-    ldr r0, =10000000
+    //turn OK led on if we drew a pixel. 7 more seconds until drawing starts
+    mov r0,#16
+    mov r1,#1
+    bl SetGpioFunction
+    mov r0,#16
+    mov r1,#0
+    bl SetGpio
+    //end led turn on
+
+    //sleep after drawing first pixel so monitor has time to wake up
+    ldr r0, =7000000
     bl Sleep
 
-    mov r0,#0b1111100000000000 //red
-    bl SetForeColor
-    ldr r0,=1919
-    ldr r1,=0
-    bl DrawPixel
-
-    mov r0,#0b0000000000011111 //blue
-    bl SetForeColor
-    ldr r0,=0
-    ldr r1,=1079
-    bl DrawPixel
-
-    ldr r0,=0b1101001111000011 //joeys fancy color
-    bl SetForeColor
-    ldr r0,=1919
-    ldr r1,=1079
-    bl DrawPixel
-
-    mov r0,#0b0000011111100000 //green
-    bl SetForeColor
-    ldr r0,=10
-    ldr r1,=10
-    ldr r2,=100
-    ldr r3,=10
-    bl DrawLine //top
-
-    ldr r0,=100
-    ldr r1,=10
-    ldr r2,=100
-    ldr r3,=100
-    bl DrawLine //right
-
-    ldr r0,=10
-    ldr r1,=100
-    ldr r2,=10
-    ldr r3,=10
-    bl DrawLine //bottom
-
-    ldr r0,=10
-    ldr r1,=100
-    ldr r2,=100
-    ldr r3,=100
-    bl DrawLine //left
-
-    mov r0,#0b1111100000000000 //red
-    bl SetForeColor
-    ldr r0,=10
-    ldr r1,=10
-    ldr r2,=100
-    ldr r3,=100
-    bl DrawLine //diagonal
-
-    ldr r0,=10
-    ldr r1,=100
-    ldr r2,=100
-    ldr r3,=10
-    bl DrawLine //reverse diagonal
-
-
-    ldr r0,=0b0000011111111111 //blue
-    bl SetForeColor
-
+    random .req r4
+    color .req r5
+    lastX .req r6
+    lastY .req r7
+    x .req r8
+    y .req r9
+    mov random,#12
+    ldr lastX, =960
+    ldr lastY, =540
+    mov color,#0b0000011101000000 //white
     render$:
-        x0 .req r5
-        y0 .req r6
-        x1 .req r7
-        y1 .req r8
-        //set initial values
-        mov x0,#0
-        ldr y0,=1079
-        ldr x1,=1919
-        mov y1,y0
+        mov r0,random
+        bl Random
+        mov x,r0
+        bl Random
+        mov y,r0
+        mov random,r0
 
-        innerLoop$:
-            cmp y0,#0
-            bls out$
-            mov r0, x0
-            mov r1, y0
-            mov r2, x1
-            mov r3, y1
-            bl DrawLine
-            sub y0,#1
-            mov y1,y0
-            b innerLoop$
-        out$:
+        mov r0,color
+        add color,#1
+        lsl color,#16
+        lsr color,#16
+        bl SetForeColor
+
+        mov r0,lastX
+        mov r1,lastY
+        lsr r2,x,#21
+        lsr r3,y,#21
+
+        ldr r10,=1079
+        cmp r3,r10
+        bhs render$
+        ldr r10,=1919
+        cmp r2,r10
+        bhs render$
+
+        mov lastX,r2
+        mov lastY,r3
+
+        bl DrawLine
 
     b render$
 
-    .unreq fbInfoAddr
-
+    .unreq x
+    .unreq y
+    .unreq random
+    .unreq color
+    .unreq lastX
+    .unreq lastY

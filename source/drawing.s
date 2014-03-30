@@ -145,8 +145,8 @@ DrawLine:
         addge y0,sy
 
         //just for fun
-        //ldr r0, =1200
-        //bl Sleep
+        ldr r0, =150
+        bl Sleep
         b pixelLoop$
     .unreq x0
     .unreq x1
