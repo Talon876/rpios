@@ -55,6 +55,16 @@ main:
     bl SetGpio
     //end led turn on
 
+    mov r0,#9
+    bl FindTag
+    ldr r1,[r0]
+    lsl r1,#2
+    sub r1,#8
+    add r0,#8
+    mov r2,#0
+    mov r3,#0
+    bl DrawString
+
     //sleep 3s before drawing starts
     ldr r0, =3000000
     bl Sleep

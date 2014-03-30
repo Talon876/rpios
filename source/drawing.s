@@ -223,3 +223,68 @@ DrawCharacter:
     .unreq width
     .unreq height
 
+/**
+ * Draws a string at a specified location.
+ * r0 is string, r1 is length, r2 is x, r3 is y
+ */
+.globl DrawString
+DrawString:
+    x .req r4
+    y .req r5
+    x0 .req r6
+    string .req r7
+    length .req r8
+    char .req r9
+    push {r4, r5, r6, r7, r8, r9, lr}
+
+    mov string, r0
+    mov length, r1
+    mov x, r2
+    mov x0, x
+    mov y, r3
+
+
+    stringLoop$:
+        subs length, #1
+        blt stringLoopEnd$
+
+        ldrb char,[string]
+        add string,#1
+
+        mov r0, char
+        mov r1, x
+        mov r2, y
+        bl DrawCharacter
+        cwidth .req r0
+        cheight .req r1
+
+        teq char,#'\n'
+            moveq x,x0
+            addeq y,cheight
+            beq stringLoop$
+
+        teq char,#'\t'
+        addne x,cwidth
+        bne stringLoop$
+
+        add cwidth, cwidth,lsl #2
+        x1 .req r1
+        mov x1,x0
+
+        stringLoopTab$:
+            add x1, cwidth
+            cmp x,x1
+            bge stringLoopTab$
+        mov x,x1
+        .unreq x1
+        b stringLoop$
+    stringLoopEnd$:
+
+    pop {r4, r5, r6, r7, r8, r9, pc}
+    .unreq x
+    .unreq y
+    .unreq x0
+    .unreq string
+    .unreq length
+    .unreq char
+
