@@ -36,31 +36,105 @@ main:
     noError$:
     fbInfoAddr .req r4
     mov fbInfoAddr, r0
+    bl SetGraphicsAddress
+
+    mov r0,#0b0000011111100000 //green
+    bl SetForeColor
+    ldr r0,=0
+    ldr r1,=0
+    bl DrawPixel
+
+    //sleep 10s after drawing first pixel so monitor has time to wake up
+    ldr r0, =10000000
+    bl Sleep
+
+    mov r0,#0b1111100000000000 //red
+    bl SetForeColor
+    ldr r0,=1919
+    ldr r1,=0
+    bl DrawPixel
+
+    mov r0,#0b0000000000011111 //blue
+    bl SetForeColor
+    ldr r0,=0
+    ldr r1,=1079
+    bl DrawPixel
+
+    ldr r0,=0b1101001111000011 //joeys fancy color
+    bl SetForeColor
+    ldr r0,=1919
+    ldr r1,=1079
+    bl DrawPixel
+
+    mov r0,#0b0000011111100000 //green
+    bl SetForeColor
+    ldr r0,=10
+    ldr r1,=10
+    ldr r2,=100
+    ldr r3,=10
+    bl DrawLine //top
+
+    ldr r0,=100
+    ldr r1,=10
+    ldr r2,=100
+    ldr r3,=100
+    bl DrawLine //right
+
+    ldr r0,=10
+    ldr r1,=100
+    ldr r2,=10
+    ldr r3,=10
+    bl DrawLine //bottom
+
+    ldr r0,=10
+    ldr r1,=100
+    ldr r2,=100
+    ldr r3,=100
+    bl DrawLine //left
+
+    mov r0,#0b1111100000000000 //red
+    bl SetForeColor
+    ldr r0,=10
+    ldr r1,=10
+    ldr r2,=100
+    ldr r3,=100
+    bl DrawLine //diagonal
+
+    ldr r0,=10
+    ldr r1,=100
+    ldr r2,=100
+    ldr r3,=10
+    bl DrawLine //reverse diagonal
+
+
+    ldr r0,=0b0000011111111111 //blue
+    bl SetForeColor
 
     render$:
-        fbAddr .req r3
-        ldr fbAddr,[fbInfoAddr,#32]
+        x0 .req r5
+        y0 .req r6
+        x1 .req r7
+        y1 .req r8
+        //set initial values
+        mov x0,#0
+        ldr y0,=1079
+        ldr x1,=1919
+        mov y1,y0
 
-        color .req r0
-        y .req r1
-        ldr y,=1080
-        drawRow$:
-            x .req r2
-            ldr x,=1920
-            drawPixel$:
-                strh color,[fbAddr] //store low half word number in color at fbAddr
-                add fbAddr,#2
-                sub x,#1
-                teq x,#0
-                bne drawPixel$
+        innerLoop$:
+            cmp y0,#0
+            bls out$
+            mov r0, x0
+            mov r1, y0
+            mov r2, x1
+            mov r3, y1
+            bl DrawLine
+            sub y0,#1
+            mov y1,y0
+            b innerLoop$
+        out$:
 
-            sub y,#1
-            add color,#1
-            teq y,#0
-            bne drawRow$
+    b render$
 
-        b render$
-
-    .unreq fbAddr
     .unreq fbInfoAddr
 

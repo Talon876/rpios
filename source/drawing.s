@@ -10,7 +10,10 @@ graphicsAddress:
 .section .text
 
 /**
- * Sets the color to draw as.
+ * Sets the 16 bit high-color to draw with.
+ * ooooo oooooo ooooo
+ * red   green  blue
+ * 0-31  0-63   0-31
  */
 .globl SetForeColor
 SetForeColor:
@@ -127,7 +130,7 @@ DrawLine:
     pixelLoop$:
         teq x0,x1
         teqne y0,y1
-        popeq {r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+        popeq {r4,r5,r6,r7,r8,r9,r10,r11,r12,pc}
 
         mov r0,x0
         mov r1,y0
@@ -141,6 +144,9 @@ DrawLine:
         addge err,dx
         addge y0,sy
 
+        //just for fun
+        //ldr r0, =1200
+        //bl Sleep
         b pixelLoop$
     .unreq x0
     .unreq x1
