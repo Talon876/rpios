@@ -41,7 +41,7 @@ GetMailboxBase:
  * 6. Write to the Write.
  */
 .globl MailboxWrite
-MialboxWrite:
+MailboxWrite:
     // Step 1
     tst r0,#0b1111 //computes 'and r0, #0b1111' then compares with 0
     movne pc,lr //if low 4 bits of r0 weren't 0, bail out
@@ -85,6 +85,7 @@ MialboxWrite:
  * 7. Return the result to r0
  */
 .globl MailboxRead
+MailboxRead:
     // Step 1
     cmp r0, #15
     movhi pc, lr //if mailbox is higher than 15, bail out

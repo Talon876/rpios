@@ -3,7 +3,7 @@
  * It will fill out some information and return it to us through the mailbox.
  */
 
-.section data
+.section .data
 .align 4
 .globl FrameBufferInfo
 
@@ -12,15 +12,15 @@ FrameBufferInfo:
 /**
  * The physical width and height of the screen in pixels.
  */
-.int 1024 // #0 physical width
-.int 768  // #4 physical height
+.int 1920 // #0 physical width
+.int 1080  // #4 physical height
 
 /**
  * The virtual width and height of the screen in pixels. This will be the real
  * resolution and the gpu will scale it to the physical resolution.
  */
-.int 1024 // #8 virtual width
-.int 768  // #12 virtual height
+.int 1920 // #8 virtual width
+.int 1080  // #12 virtual height
 
 /**
  * Filled out by GPU.
@@ -52,9 +52,11 @@ FrameBufferInfo:
  */
 .int 0    // #36 gpu - framebuffer size in bytes.
 
-.section text
+.section .text
 
 /**
+ * Returns the address of the frame buffer info if successful, otherwise 0.
+ * 
  * Inputs: r0 = width, r1 = height, r2 = bitDepth
  * 1. Validate Inputs
  * 2. Write the inputs into the frame buffer.
