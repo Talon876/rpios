@@ -12,15 +12,15 @@ FrameBufferInfo:
 /**
  * The physical width and height of the screen in pixels.
  */
-.int 1920 // #0 physical width
-.int 1080  // #4 physical height
+.int 1024 // #0 physical width
+.int 768  // #4 physical height
 
 /**
  * The virtual width and height of the screen in pixels. This will be the real
  * resolution and the gpu will scale it to the physical resolution.
  */
-.int 1920 // #8 virtual width
-.int 1080  // #12 virtual height
+.int 1024 // #8 virtual width
+.int 768  // #12 virtual height
 
 /**
  * Filled out by GPU.
@@ -54,7 +54,58 @@ FrameBufferInfo:
 
 .section text
 
+/**
+ * Inputs: r0 = width, r1 = height, r2 = bitDepth
+ * 1. Validate Inputs
+ * 2. Write the inputs into the frame buffer.
+ * 3. Send address of the frameBuffer + 0x40000000 to the mailbox.
+ * 4. Receive the reply from the mailbox
+ * 5. If the reply is not 0, it failed, return 0 to indicate failure.
+ * 6. Return a pointer to the frame buffer info.
+ */
+.globl InitFrameBuffer
+InitFrameBuffer:
+    // Step 1
+    width .req r0
+    height .req r1
+    bitDepth .req r2
+    cmp width,#4096
+    cmpls height,#4096
+    cmpls bitDepth,#32
+    result .req r0
+    movhi result,#0
+    movhi pc,lr
 
+    // Step 2
+    fbInfoAddr .req r4
+    push {r4, lr}
+    ldr fbInfoAddr,=FrameBufferInfo
+    str width,[r4,#0]
+    str height,[r4,#4]
+    str width,[r4,#8]
+    str height,[r4,#12]
+    str bitDepth,[r4,#20]
+    .unreq width
+    .unreq height
+    .unreq bitDepth
 
+    // Step 3
+    mov r0, fbInfoAddr
+    add r0,#0x40000000
+    mov r1,#1
+    bl MailboxWrite
 
+    // Step 4
+    mov r0, #1
+    bl MailboxRead
+
+    // Step 5 
+    teq result,#0
+    movne result,#0
+    popne {r4,pc} //return 0 if the gpu is angry
+
+    mov result,fbInfoAddr
+    pop {r4,pc}
+    .unreq result
+    .unreq fbInfoAddr
 
