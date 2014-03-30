@@ -14,6 +14,7 @@ tag_cmdline: .int 0
 
 /**
  * r0 is the tag to find, must be >0 and <= 9
+ * Returns the address of the tag, or 0 if it failed.
  */
 .globl FindTag
 FindTag:
@@ -29,37 +30,37 @@ FindTag:
 
     ldr tagList,=tag_core
     tagReturn$:
-    add tagAddr,tagList,tag,lsl #2
-    ldr tagAddr,[tagAddr]
+        add tagAddr,tagList,tag,lsl #2
+        ldr tagAddr,[tagAddr]
 
-    teq tagAddr,#0
-    movne r0,tagAddr
-    movne pc,lr
+        teq tagAddr,#0
+        movne r0,tagAddr
+        movne pc,lr
 
-    ldr tagAddr,[tagList]
-    teq tagAddr,#0
-    movne r0,#0
-    movne pc,lr
+        ldr tagAddr,[tagList]
+        teq tagAddr,#0
+        movne r0,#0
+        movne pc,lr
 
-    mov tagAddr,#0x100
-    push {r4}
-    tagIndex .req r3
-    oldAddr .req r4
-    tagLoop$:
-    ldrh tagIndex,[tagAddr,#4]
-    subs tagIndex,#1
-    poplt {r4}
-    blt tagReturn$
+        mov tagAddr,#0x100
+        push {r4}
+        tagIndex .req r3
+        oldAddr .req r4
+        tagLoop$:
+        ldrh tagIndex,[tagAddr,#4]
+        subs tagIndex,#1
+        poplt {r4}
+        blt tagReturn$
 
-    add tagIndex,tagList, tagIndex,lsl #2
-    ldr oldAddr,[tagIndex]
-    teq oldAddr,#0
-    .unreq oldAddr
-    streq tagAddr,[tagIndex]
+        add tagIndex,tagList, tagIndex,lsl #2
+        ldr oldAddr,[tagIndex]
+        teq oldAddr,#0
+        .unreq oldAddr
+        streq tagAddr,[tagIndex]
 
-    ldr tagIndex,[tagAddr]
-    add tagAddr, tagIndex,lsl #2
-    b tagLoop$
+        ldr tagIndex,[tagAddr]
+        add tagAddr, tagIndex,lsl #2
+        b tagLoop$
 
     .unreq tag
     .unreq tagList
