@@ -46,119 +46,174 @@ bl SetForeColor
 mov r0,#0
 ldr r1,=540
 ldr r2,=101
-ldr r3,=535
+ldr r3,=543
 bl DrawLine
 
 ldr r0,=101
-ldr r1,=535
+ldr r1,=543
 ldr r2,=101
-ldr r3,=535
+ldr r3,=543
 bl DrawLine
 
 ldr r0,=101
-ldr r1,=535
+ldr r1,=543
 ldr r2,=202
-ldr r3,=556
+ldr r3,=545
 bl DrawLine
 
 ldr r0,=202
-ldr r1,=556
+ldr r1,=545
 ldr r2,=303
-ldr r3,=551
+ldr r3,=574
 bl DrawLine
 
 ldr r0,=303
-ldr r1,=551
+ldr r1,=574
 ldr r2,=404
-ldr r3,=500
-bl DrawLine
-
-ldr r0,=404
-ldr r1,=500
-ldr r2,=505
-ldr r3,=565
-bl DrawLine
-
-ldr r0,=505
-ldr r1,=565
-ldr r2,=606
-ldr r3,=564
-bl DrawLine
-
-ldr r0,=606
-ldr r1,=564
-ldr r2,=707
-ldr r3,=549
-bl DrawLine
-
-ldr r0,=707
-ldr r1,=549
-ldr r2,=808
-ldr r3,=536
-bl DrawLine
-
-ldr r0,=808
-ldr r1,=536
-ldr r2,=909
-ldr r3,=532
-bl DrawLine
-
-ldr r0,=909
-ldr r1,=532
-ldr r2,=1010
-ldr r3,=501
-bl DrawLine
-
-ldr r0,=1010
-ldr r1,=501
-ldr r2,=1111
-ldr r3,=567
-bl DrawLine
-
-ldr r0,=1111
-ldr r1,=567
-ldr r2,=1212
-ldr r3,=560
-bl DrawLine
-
-ldr r0,=1212
-ldr r1,=560
-ldr r2,=1313
-ldr r3,=579
-bl DrawLine
-
-ldr r0,=1313
-ldr r1,=579
-ldr r2,=1414
-ldr r3,=568
-bl DrawLine
-
-ldr r0,=1414
-ldr r1,=568
-ldr r2,=1515
-ldr r3,=541
-bl DrawLine
-
-ldr r0,=1515
-ldr r1,=541
-ldr r2,=1616
 ldr r3,=510
 bl DrawLine
 
-ldr r0,=1616
+ldr r0,=404
 ldr r1,=510
+ldr r2,=505
+ldr r3,=535
+bl DrawLine
+
+ldr r0,=505
+ldr r1,=535
+ldr r2,=606
+ldr r3,=580
+bl DrawLine
+
+ldr r0,=606
+ldr r1,=580
+ldr r2,=707
+ldr r3,=545
+bl DrawLine
+
+ldr r0,=707
+ldr r1,=545
+ldr r2,=808
+ldr r3,=559
+bl DrawLine
+
+ldr r0,=808
+ldr r1,=559
+ldr r2,=909
+ldr r3,=526
+bl DrawLine
+
+ldr r0,=909
+ldr r1,=526
+ldr r2,=1010
+ldr r3,=513
+bl DrawLine
+
+ldr r0,=1010
+ldr r1,=513
+ldr r2,=1111
+ldr r3,=553
+bl DrawLine
+
+ldr r0,=1111
+ldr r1,=553
+ldr r2,=1212
+ldr r3,=505
+bl DrawLine
+
+ldr r0,=1212
+ldr r1,=505
+ldr r2,=1313
+ldr r3,=514
+bl DrawLine
+
+ldr r0,=1313
+ldr r1,=514
+ldr r2,=1414
+ldr r3,=548
+bl DrawLine
+
+ldr r0,=1414
+ldr r1,=548
+ldr r2,=1515
+ldr r3,=536
+bl DrawLine
+
+ldr r0,=1515
+ldr r1,=536
+ldr r2,=1616
+ldr r3,=502
+bl DrawLine
+
+ldr r0,=1616
+ldr r1,=502
 ldr r2,=1717
-ldr r3,=589
+ldr r3,=520
 bl DrawLine
 
 ldr r0,=1717
-ldr r1,=589
+ldr r1,=520
 ldr r2,=1818
-ldr r3,=523
+ldr r3,=580
+bl DrawLine
+
+ldr r0,=1818
+ldr r1,=580
+ldr r2,=1919
+ldr r3,=571
 bl DrawLine
 
 
-ldr r0,=1000000
+ldr r0,=0b1111100000000000
+bl SetForeColor
+
+ldr r0,=85
+ldr r1,=890
+ldr r2,=585
+bl DrawCharacter
+ldr r0,=100000
+bl Sleep
+
+mov r0,#0b0000011111100000
+bl SetForeColor
+
+ldr r0,=87
+ldr r1,=906
+ldr r2,=585
+bl DrawCharacter
+ldr r0,=79
+ldr r1,=922
+ldr r2,=585
+bl DrawCharacter
+ldr r0,=84
+ldr r1,=938
+ldr r2,=585
+bl DrawCharacter
+ldr r0,=100000
+bl Sleep
+
+mov r0,#0b0000000000011111
+bl SetForeColor
+
+ldr r0,=109
+ldr r1,=954
+ldr r2,=585
+bl DrawCharacter
+ldr r0,=56
+ldr r1,=970
+ldr r2,=585
+bl DrawCharacter
+ldr r0,=750000
+bl Sleep
+
+ldr r0,=0b1111111111111111
+bl SetForeColor
+
+ldr r0,=63
+ldr r1,=986
+ldr r2,=585
+bl DrawCharacter
+ldr r0,=500000
 bl Sleep
 
 pop {pc}
