@@ -28,6 +28,16 @@ SetForeColor:
     mov pc,lr
 
 /**
+ * Returns the current 16 bit high-color to r0.
+ */
+.globl GetForeColor
+GetForeColor:
+   ldr r0,=foreColor
+   ldrh r0,[r0]
+   mov pc,lr
+
+
+/**
  * Sets where in memory to draw to.
  */
 .globl SetGraphicsAddress
@@ -149,8 +159,8 @@ DrawLine:
         addge y0,sy
 
         //just for fun
-        ldr r0, =150
-        bl Sleep
+        //ldr r0, =150
+        //bl Sleep
         b pixelLoop$
     .unreq x0
     .unreq x1
@@ -287,4 +297,65 @@ DrawString:
     .unreq string
     .unreq length
     .unreq char
+
+
+/*
+ * Clears the screen with the color given in r0.
+ * Sets the color back to what it was when it's done.
+ * 1. Save current foreColor
+ * 2. Set the foreColor to the specified one
+ * 3. Save the fbWidth and fbHeight
+ * 4. Draw a line from (0,y) to (fbWidth,y)
+ * 5. Increment y
+ * 6. If y >= fbHeight, restore foreColor and bail out, otherwise go to 4
+ */
+.globl ClearScreen
+ClearScreen:
+    push {lr}
+    //push {r4, r5, r6, r7, r8, r9, lr}
+    // Step 1
+    //mov r1, r0 //save color passed in
+    //bl GetForeColor
+    //push {r0} // save color on stack
+
+    // Step 2
+    //mov r0, r1
+    bl SetForeColor
+
+    // Step 3
+    fbWidth  .req r4
+    fbHeight .req r5
+    y        .req r6
+    ldr fbWidth, =1919
+    ldr fbHeight, =1079
+    mov y,#0
+
+    clearLoop$:
+    // Step 4
+    mov r0, #0
+    mov r1, y
+    mov r2, fbWidth
+    mov r3, y
+    bl DrawLine
+    add y, #1
+    cmp y,fbHeight
+    bhi clearLoopEnd$
+    b clearLoop$
+    clearLoopEnd$:
+    pop {pc}
+
+
+    // Step 5
+    //add y, #1
+    //b clearLoop$
+
+    // Step 6
+    //cmp y, fbHeight
+    //pophi {r0}
+   // blhi SetForeColor
+    //pophi {r4, r5, r6, r7, r8, r9, pc}
+   // b clearLoop$
+
+
+
 

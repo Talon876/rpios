@@ -1,10 +1,7 @@
 //tells assembler to put this code in .init section, which is set as first
 .section .init 
-
 .globl _start
-
 _start:
-
 b main
 
 .section .text
@@ -16,34 +13,11 @@ main:
     mov r2,#16
     bl InitFrameBuffer
 
-    teq r0,#0
-        bne noError$
-        //wait forever and blink OK led rapidly
-        error$:
-            //turn on led
-            mov r0,#16
-            mov r1,#1
-            bl SetGpioFunction
-            mov r0,#16
-            mov r1,#0
-            bl SetGpio
-            ldr r0,=100000
-            bl Sleep
-            //turn off led
-            mov r0,#16
-            mov r1,#1
-            bl SetGpioFunction
-            mov r0,#16
-            mov r1,#1
-            bl SetGpio
-            ldr r0,=100000
-            bl Sleep
-        b error$
-
-    //otherwise continue
-    noError$:
+    teq r0,#0 //check for error
+    bne noError$
+    b FrameBufferInitError //rapidly blink led if error
+    noError$: //otherwise continue
     
-    //r0 still has fbInfoAddr so start boot logo
     bl DisplayBootLogo
 
     //turn OK led on if we get past the boot logo
@@ -53,68 +27,68 @@ main:
     mov r0,#16
     mov r1,#0
     bl SetGpio
-    //end led turn on
+    //end led turn on    
 
-    mov r0,#9
-    bl FindTag
-    ldr r1,[r0]
-    lsl r1,#2
-    sub r1,#8
-    add r0,#8
-    mov r2,#0
-    mov r3,#0
-    bl DrawString
-
-    //sleep 3s before drawing starts
-    ldr r0, =3000000
+    ldr r0,=5000000
     bl Sleep
 
-    random .req r4
-    color .req r5
-    lastX .req r6
-    lastY .req r7
-    x .req r8
-    y .req r9
-    mov random,#12
-    ldr lastX, =960
-    ldr lastY, =540
-    mov color,#0b0000011101000000 //white
-    render$:
-        mov r0,random
-        bl Random
-        mov x,r0
-        bl Random
-        mov y,r0
-        mov random,r0
+    
+    mov r0,#0b1111100000000000 //red
+    bl ClearScreen
+    mov r0,#0b0000011111100000 //green
+    bl ClearScreen
+    mov r0,#0b0000000000011111 //blue
+    bl ClearScreen
+    mov r0,#0b0000000000000000 //black
+    bl ClearScreen
 
-        mov r0,color
-        add color,#1
-        lsl color,#16
-        lsr color,#16
-        bl SetForeColor
+    mov r0,#0b0000011111100000 //green
+    bl SetForeColor
 
-        mov r0,lastX
-        mov r1,lastY
-        lsr r2,x,#21
-        lsr r3,y,#21
+    mov r4,#0
+    loop$:
+        ldr r0,=format
+        mov r1,#formatEnd-format
+        ldr r2,=formatEnd
+        lsr r3,r4,#4
 
-        ldr r10,=1079
-        cmp r3,r10
-        bhs render$
-        ldr r10,=1919
-        cmp r2,r10
-        bhs render$
+        cmp r3,#127
+        bhi Halt
 
-        mov lastX,r2
-        mov lastY,r3
+        push {r3}
+        push {r3}
+        push {r3}
+        push {r3}
+        bl FormatString
+        add sp,#16
 
-        bl DrawLine
+        mov r1,r0
+        ldr r0,=formatEnd
+        mov r2,#0
+        mov r3,r4
 
-    b render$
+        cmp r3,#1072-16
+        subhi r3,#1072
+        addhi r2,#288
 
-    .unreq x
-    .unreq y
-    .unreq random
-    .unreq color
-    .unreq lastX
-    .unreq lastY
+        cmp r3,#1072-16
+        subhi r3,#1072
+        addhi r2,#288
+
+        cmp r3,#1072-16
+        subhi r3,#1072
+        addhi r2,#288
+
+        bl DrawString
+
+        add r4,#16
+
+    b loop$
+    
+    b Halt
+
+.section .data
+format:
+.ascii "%d = 0b%b = 0x%x = 0%o = '%c'"
+formatEnd:
+
