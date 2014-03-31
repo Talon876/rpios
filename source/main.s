@@ -46,7 +46,7 @@ main:
         lsr r3,r4,#4
 
         cmp r3,#127
-        bhi Halt
+        bhi done$
 
         push {r3}
         push {r3}
@@ -77,6 +77,12 @@ main:
         add r4,#16
 
     b loop$
+    done$:
+        ldr r0,=5000000
+        bl Sleep
+        mov r0,#0
+        bl ClearScreen
+        b main
     
     b Halt
 
