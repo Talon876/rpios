@@ -29,16 +29,9 @@ main:
     bl SetGpio
     //end led turn on    
 
-    ldr r0,=5000000
+    ldr r0,=1000000
     bl Sleep
 
-    
-    mov r0,#0b1111100000000000 //red
-    bl ClearScreen
-    mov r0,#0b0000011111100000 //green
-    bl ClearScreen
-    mov r0,#0b0000000000011111 //blue
-    bl ClearScreen
     mov r0,#0b0000000000000000 //black
     bl ClearScreen
 
